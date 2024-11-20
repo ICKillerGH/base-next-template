@@ -1,10 +1,4 @@
-import { loginAction, test } from "./actions";
 import Form from "./form";
-
-const initialState = {
-  email: "",
-  password: "",
-};
 
 export default function Login() {
   return (

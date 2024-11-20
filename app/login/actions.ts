@@ -2,32 +2,27 @@
 
 import { eq } from "drizzle-orm";
 import { db, usersTable } from "../db/schema";
-import { z } from "zod";
 import {
   createSession,
   generateSessionToken,
   setSessionTokenCookie,
 } from "../lib/session";
 import { redirect } from "next/navigation";
-export const test = async (formData: FormData) => {};
-const loginSchema = z.object({
-  email: z.string({
-    invalid_type_error: "Email no válido.",
-  }),
-  password: z.string({
-    invalid_type_error: "Contraseña no válida.",
-  }),
-});
+import { LoginSchema, loginSchema } from "./validation";
 
-export type LoginActionState =
+export type LoginActionState = { fields: Partial<LoginSchema> } & (
   | {
-      success: true;
+      state: "initial";
     }
   | {
-      success: false;
-      message: string;
+      state: "validation-error";
       errors: Record<string, string[]>;
-    };
+    }
+  | {
+      state: "unkown-error";
+      message: string;
+    }
+);
 
 export const loginAction = async (
   prevState: LoginActionState,
@@ -39,12 +34,18 @@ export const loginAction = async (
   };
 
   const validatedFields = loginSchema.safeParse(rawData);
+
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors, rawData);
+    const fields = Object.entries(rawData).reduce(
+      (final, [key, value]) =>
+        Object.assign(final, { [key]: value?.toString() }),
+      {}
+    );
+
     return {
-      success: false,
-      message: "Error de validación",
+      state: "validation-error",
       errors: validatedFields.error.flatten().fieldErrors,
+      fields,
     };
   }
 
@@ -58,9 +59,9 @@ export const loginAction = async (
 
   if (!user) {
     return {
-      success: false,
-      message: "Error de validación",
+      state: "validation-error",
       errors: { email: ["Credenciales Invalidas"] },
+      fields: validatedFields.data,
     };
   }
 
@@ -68,9 +69,9 @@ export const loginAction = async (
 
   if (!passwordMatches) {
     return {
-      success: false,
-      message: "Error de validación",
+      state: "validation-error",
       errors: { email: ["Credenciales Invalidas"] },
+      fields: validatedFields.data,
     };
   }
 
@@ -79,8 +80,4 @@ export const loginAction = async (
   setSessionTokenCookie(token, session.expiresAt);
 
   redirect("/");
-
-  return {
-    success: true,
-  };
 };

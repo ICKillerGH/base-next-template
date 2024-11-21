@@ -1,12 +1,12 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { db, usersTable } from "../db/schema";
+import { db, usersTable } from "@/db/schema";
 import {
   createSession,
   generateSessionToken,
   setSessionTokenCookie,
-} from "../lib/session";
+} from "@/lib/session";
 import { redirect } from "next/navigation";
 import { LoginSchema, loginSchema } from "./validation";
 

@@ -1,4 +1,4 @@
-import { getCurrentSessionOrRedirect } from "../lib/session";
+import { getCurrentSessionOrRedirect } from "../../lib/session";
 
 export default async function Protected() {
   const { user } = await getCurrentSessionOrRedirect();

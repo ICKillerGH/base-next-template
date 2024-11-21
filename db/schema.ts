@@ -1,3 +1,4 @@
+import "@/lib/env-config.ts";
 import mysql from "mysql2/promise";
 import { mysqlTable, int, varchar, datetime } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/mysql2";
@@ -15,7 +16,7 @@ export const db = drizzle(poolConnection);
 
 export const usersTable = mysqlTable("users", {
   id: int("id", { unsigned: true }).primaryKey().autoincrement(),
-  email: varchar("email", { length: 100 }).notNull(),
+  email: varchar("email", { length: 100 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
 });
 

@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "./components/app-sidebar";
 import { getCurrentSessionOrRedirect } from "@/lib/session";
+import AppHeader from "./components/app-header";
 
 export default async function DashboardLayout({
   children,
@@ -13,10 +14,7 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
-        <nav className="flex items-center px-6 h-header bg-sidebar border-b border-sidebar">
-          <SidebarTrigger />
-        </nav>
-
+        <AppHeader />
         <section className="p-6">{children}</section>
       </main>
     </SidebarProvider>

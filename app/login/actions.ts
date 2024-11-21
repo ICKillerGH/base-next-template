@@ -9,6 +9,7 @@ import {
 } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { LoginSchema, loginSchema } from "./validation";
+import { revalidatePath } from "next/cache";
 
 export type LoginActionState = { fields: Partial<LoginSchema> } & (
   | {
@@ -79,5 +80,6 @@ export const loginAction = async (
   const session = await createSession(token, user.id);
   setSessionTokenCookie(token, session.expiresAt);
 
+  revalidatePath("/");
   redirect("/");
 };

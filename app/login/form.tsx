@@ -1,15 +1,10 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { loginAction } from "./actions";
-import { useActionState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema, loginSchema } from "./validation";
+import { useActionState } from "react";
 
 export default function Form() {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction] = useActionState(loginAction, {
+  const [state, formAction, isPending] = useActionState(loginAction, {
     status: "initial",
     fields: {
       email: "",
@@ -17,60 +12,36 @@ export default function Form() {
     },
   });
 
-  const form = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      // onSubmit={form.handleSubmit(() => formRef.current?.submit())}
-    >
+    <form action={formAction}>
       <div>
         <input
           type="text"
           id="email"
+          name="email"
           placeholder="Email"
           defaultValue={state.fields.email}
-          {...form.register("email")}
         />
-        {/* {state.state === "validation-error" && state.errors.email?.[0] && (
+        {state.status === "validation-error" && state.errors.email?.[0] && (
           <span>{state.errors.email?.[0]}</span>
-        )} */}
-        {form.formState.errors.email && (
-          <span>{form.formState.errors.email?.message}</span>
         )}
       </div>
       <div>
         <input
           type="password"
           id="password"
+          name="password"
           placeholder="Password"
           defaultValue={state.fields.password}
-          {...form.register("password")}
         />
-        {/* {state.state === "validation-error" && state.errors.password?.[0] && (
+        {state.status === "validation-error" && state.errors.password?.[0] && (
           <span>{state.errors.password?.[0]}</span>
-        )} */}
-        {form.formState.errors.password && (
-          <span>{form.formState.errors.password?.message}</span>
         )}
       </div>
 
       {state.status === "unkown-error" && <p>{state.message}</p>}
 
-      <SubmitButton />
+      <button>{isPending ? "Cargando" : "Ingresar"}</button>
     </form>
   );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return <button>{pending ? "Cargando" : "Ingresar"}</button>;
 }

@@ -23,11 +23,17 @@ export function generateSessionToken(): string {
   return token;
 }
 
+function generateSessionId(token: string) {
+  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  return sessionId;
+}
+
 export async function createSession(
   token: string,
   userId: number
 ): Promise<Session> {
-  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  const sessionId = generateSessionId(token);
+
   const session: Session = {
     id: sessionId,
     userId,
@@ -40,7 +46,8 @@ export async function createSession(
 export async function validateSessionToken(
   token: string
 ): Promise<SessionValidationResult> {
-  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  const sessionId = generateSessionId(token);
+
   const result = await db
     .select({ user: usersTable, session: sessionsTable })
     .from(sessionsTable)
@@ -73,6 +80,7 @@ export async function validateSessionToken(
 
 export async function invalidateSession(sessionId: string): Promise<void> {
   await db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId));
+  await deleteSessionTokenCookie();
 }
 
 export type SessionValidationResult =
@@ -84,6 +92,7 @@ export async function setSessionTokenCookie(
   expiresAt: Date
 ): Promise<void> {
   const cookieStore = await cookies();
+
   cookieStore.set("session", token, {
     httpOnly: true,
     sameSite: "lax",
@@ -95,6 +104,7 @@ export async function setSessionTokenCookie(
 
 export async function deleteSessionTokenCookie(): Promise<void> {
   const cookieStore = await cookies();
+
   cookieStore.set("session", "", {
     httpOnly: true,
     sameSite: "lax",
@@ -108,6 +118,7 @@ export const getCurrentSession = cache(
   async (): Promise<SessionValidationResult> => {
     const cookieStore = await cookies();
     const token = cookieStore.get("session")?.value ?? null;
+
     if (token === null) {
       return { session: null, user: null };
     }
@@ -120,7 +131,7 @@ export async function getCurrentSessionOrRedirect(to: string = "/login") {
   const session = await getCurrentSession();
 
   if (session.session === null) {
-    return redirect("/login");
+    return redirect(to);
   }
 
   return session;

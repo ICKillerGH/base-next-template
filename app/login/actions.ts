@@ -33,7 +33,7 @@ export const loginAction = async (
     password: formData.get("password"),
   };
 
-  const validatedFields = loginSchema.safeParse({});
+  const validatedFields = loginSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     const fields = Object.entries(rawData).reduce(

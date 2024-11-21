@@ -12,20 +12,20 @@ import { LoginSchema, loginSchema } from "./validation";
 
 export type LoginActionState = { fields: Partial<LoginSchema> } & (
   | {
-      state: "initial";
+      status: "initial";
     }
   | {
-      state: "validation-error";
+      status: "validation-error";
       errors: Record<string, string[]>;
     }
   | {
-      state: "unkown-error";
+      status: "unkown-error";
       message: string;
     }
 );
 
 export const loginAction = async (
-  prevState: LoginActionState,
+  _: LoginActionState,
   formData: FormData
 ): Promise<LoginActionState> => {
   const rawData = {
@@ -33,7 +33,7 @@ export const loginAction = async (
     password: formData.get("password"),
   };
 
-  const validatedFields = loginSchema.safeParse(rawData);
+  const validatedFields = loginSchema.safeParse({});
 
   if (!validatedFields.success) {
     const fields = Object.entries(rawData).reduce(
@@ -43,7 +43,7 @@ export const loginAction = async (
     );
 
     return {
-      state: "validation-error",
+      status: "validation-error",
       errors: validatedFields.error.flatten().fieldErrors,
       fields,
     };
@@ -59,18 +59,18 @@ export const loginAction = async (
 
   if (!user) {
     return {
-      state: "validation-error",
+      status: "validation-error",
       errors: { email: ["Credenciales Invalidas"] },
       fields: validatedFields.data,
     };
   }
 
-  const passwordMatches = user.password === "password";
+  const passwordMatches = user.password === validatedFields.data.password;
 
   if (!passwordMatches) {
     return {
-      state: "validation-error",
-      errors: { email: ["Credenciales Invalidas"] },
+      status: "validation-error",
+      errors: { email: ["Credenciales Invalidas 2"] },
       fields: validatedFields.data,
     };
   }

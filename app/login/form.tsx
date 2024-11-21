@@ -10,33 +10,38 @@ import { LoginSchema, loginSchema } from "./validation";
 export default function Form() {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction] = useActionState(loginAction, {
-    state: "initial",
+    status: "initial",
     fields: {
-      email: "asdf",
+      email: "",
       password: "",
     },
   });
+
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
-    defaultValues: state.fields,
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   return (
     <form
       ref={formRef}
       action={formAction}
-      onSubmit={form.handleSubmit(() => formRef.current?.submit())}
+      // onSubmit={form.handleSubmit(() => formRef.current?.submit())}
     >
       <div>
         <input
           type="text"
           id="email"
           placeholder="Email"
+          defaultValue={state.fields.email}
           {...form.register("email")}
         />
-        {state.state === "validation-error" && state.errors.email?.[0] && (
+        {/* {state.state === "validation-error" && state.errors.email?.[0] && (
           <span>{state.errors.email?.[0]}</span>
-        )}
+        )} */}
         {form.formState.errors.email && (
           <span>{form.formState.errors.email?.message}</span>
         )}
@@ -46,17 +51,18 @@ export default function Form() {
           type="password"
           id="password"
           placeholder="Password"
+          defaultValue={state.fields.password}
           {...form.register("password")}
         />
-        {state.state === "validation-error" && state.errors.password?.[0] && (
+        {/* {state.state === "validation-error" && state.errors.password?.[0] && (
           <span>{state.errors.password?.[0]}</span>
-        )}
+        )} */}
         {form.formState.errors.password && (
           <span>{form.formState.errors.password?.message}</span>
         )}
       </div>
 
-      {state.state === "unkown-error" && <p>{state.message}</p>}
+      {state.status === "unkown-error" && <p>{state.message}</p>}
 
       <SubmitButton />
     </form>

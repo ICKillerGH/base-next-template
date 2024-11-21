@@ -4,13 +4,14 @@ import { drizzle } from "drizzle-orm/mysql2";
 
 import type { InferSelectModel } from "drizzle-orm";
 
-const connection = await mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+const poolConnection = mysql.createPool({
+  host: process.env.DB_HOST!,
+  user: process.env.DB_USER!,
+  password: process.env.DB_PASS!,
+  database: process.env.DB_NAME!,
 });
-export const db = drizzle(connection);
+
+export const db = drizzle(poolConnection);
 
 export const usersTable = mysqlTable("users", {
   id: int("id", { unsigned: true }).primaryKey().autoincrement(),
@@ -22,7 +23,7 @@ export const sessionsTable = mysqlTable("sessions", {
   id: varchar("id", {
     length: 255,
   }).primaryKey(),
-  userId: int("user_id")
+  userId: int("user_id", { unsigned: true })
     .notNull()
     .references(() => usersTable.id),
   expiresAt: datetime("expires_at").notNull(),

@@ -1,16 +1,10 @@
 "use server";
 
-import { eq } from "drizzle-orm";
-import { db, usersTable } from "@/db/schema";
-import {
-  createSession,
-  generateSessionToken,
-  setSessionTokenCookie,
-} from "@/lib/session";
+import { regenerateSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { LoginSchema, loginSchema } from "./validation";
 import { revalidatePath } from "next/cache";
-import { check } from "@/lib/hashing";
+import { login, PasswordDoesntMatch, UserNotFound } from "@/src/auth/use-cases";
 
 export type LoginActionState = { fields: Partial<LoginSchema> } & (
   | {
@@ -19,10 +13,6 @@ export type LoginActionState = { fields: Partial<LoginSchema> } & (
   | {
       status: "validation-error";
       errors: Record<string, string[]>;
-    }
-  | {
-      status: "unkown-error";
-      message: string;
     }
 );
 
@@ -51,15 +41,9 @@ export const loginAction = async (
     };
   }
 
-  const users = await db
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.email, validatedFields.data.email))
-    .limit(1);
+  const user = await login(validatedFields.data);
 
-  const user = users.at(0);
-
-  if (!user) {
+  if (user instanceof UserNotFound || user instanceof PasswordDoesntMatch) {
     return {
       status: "validation-error",
       errors: { email: ["Credenciales Invalidas"] },
@@ -67,22 +51,7 @@ export const loginAction = async (
     };
   }
 
-  const passwordMatches = await check(
-    validatedFields.data.password,
-    user.password
-  );
-
-  if (!passwordMatches) {
-    return {
-      status: "validation-error",
-      errors: { email: ["Credenciales Invalidas"] },
-      fields: validatedFields.data,
-    };
-  }
-
-  const token = generateSessionToken();
-  const session = await createSession(token, user.id);
-  setSessionTokenCookie(token, session.expiresAt);
+  regenerateSession(user.id);
 
   revalidatePath("/");
   redirect("/");

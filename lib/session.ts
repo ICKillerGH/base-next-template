@@ -136,3 +136,10 @@ export async function getCurrentSessionOrRedirect(to: string = "/login") {
 
   return session;
 }
+
+export async function regenerateSession(userId: number) {
+  const token = generateSessionToken();
+  const session = await createSession(token, userId);
+
+  await setSessionTokenCookie(token, session.expiresAt);
+}

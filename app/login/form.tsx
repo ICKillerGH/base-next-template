@@ -39,8 +39,6 @@ export default function Form() {
         )}
       </div>
 
-      {state.status === "unkown-error" && <p>{state.message}</p>}
-
       <button>{isPending ? "Cargando" : "Ingresar"}</button>
     </form>
   );

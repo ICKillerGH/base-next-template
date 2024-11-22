@@ -4,7 +4,9 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   if (request.method === "GET") {
-    const response = NextResponse.next();
+    const response = NextResponse.next({
+      headers: { "x-pathname": request.nextUrl.pathname },
+    });
     const token = request.cookies.get("session")?.value ?? null;
     if (token !== null) {
       // Only extend cookie expiration on GET requests since we can be sure
@@ -40,5 +42,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       status: 403,
     });
   }
-  return NextResponse.next();
+  return NextResponse.next({
+    headers: { "x-pathname": request.nextUrl.pathname },
+  });
 }

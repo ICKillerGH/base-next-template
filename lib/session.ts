@@ -127,11 +127,14 @@ export const getCurrentSession = cache(
   }
 );
 
-export async function getCurrentSessionOrRedirect(to: string = "/login") {
+export async function getCurrentSessionOrRedirect(intended: string | null) {
   const session = await getCurrentSession();
 
+  const append =
+    intended !== null ? `?intended=${encodeURIComponent(intended)}` : "";
+
   if (session.session === null) {
-    return redirect(to);
+    return redirect(`/login` + append);
   }
 
   return session;

@@ -14,10 +14,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import FormGroup from "@/components/ui/form-group";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 export default function Form() {
+  const searchParams = useSearchParams();
+
+  const intended = searchParams.get("intended");
+
   const [state, formAction, isPending] = useActionState(loginAction, {
     status: "initial",
+    intendedUri: intended ?? undefined,
     fields: {
       email: "",
       password: "",

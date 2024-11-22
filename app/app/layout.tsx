@@ -1,6 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "./app-sidebar";
-import { getCurrentSessionOrRedirect } from "@/lib/session";
 import AppHeader from "./app-header";
 
 export default async function DashboardLayout({
@@ -8,8 +7,6 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await getCurrentSessionOrRedirect();
-
   return (
     <SidebarProvider>
       <AppSidebar />

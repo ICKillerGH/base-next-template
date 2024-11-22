@@ -6,7 +6,10 @@ import { LoginSchema, loginSchema } from "./validation";
 import { revalidatePath } from "next/cache";
 import { login, PasswordDoesntMatch, UserNotFound } from "@/src/auth/use-cases";
 
-export type LoginActionState = { fields: Partial<LoginSchema> } & (
+export type LoginActionState = {
+  fields: Partial<LoginSchema>;
+  intendedUri?: string;
+} & (
   | {
       status: "initial";
     }
@@ -17,7 +20,7 @@ export type LoginActionState = { fields: Partial<LoginSchema> } & (
 );
 
 export const loginAction = async (
-  _: LoginActionState,
+  prevState: LoginActionState,
   formData: FormData
 ): Promise<LoginActionState> => {
   const rawData = {
@@ -53,6 +56,6 @@ export const loginAction = async (
 
   regenerateSession(user.id);
 
-  revalidatePath("/");
-  redirect("/");
+  revalidatePath(prevState.intendedUri ?? "/");
+  redirect(prevState.intendedUri ?? "/");
 };

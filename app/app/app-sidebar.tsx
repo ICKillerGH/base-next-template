@@ -28,7 +28,7 @@ const items = [
   {
     groupLabel: "Mi cuenta",
     items: [
-      { title: "Dashboard", uri: "/", icon: HomeIcon },
+      { title: "Dashboard", uri: "/app", icon: HomeIcon },
       { title: "Mi perfil", uri: "#", icon: CircleUserIcon },
     ],
   },
@@ -66,7 +66,8 @@ export default function AppSidebar() {
                       isActive={item.uri === pathname}
                       className={[
                         "h-10",
-                        "data-[active=true]:bg-blue-100",
+                        "text-gray-400",
+                        "data-[active=true]:bg-blue-100/40",
                         "data-[active=true]:font-medium",
                         "data-[active=true]:text-blue-600",
                       ].join(" ")}

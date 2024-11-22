@@ -12,6 +12,7 @@ import { getCurrentSessionOrRedirect, invalidateSession } from "@/lib/session";
 import { CircleUserIcon, KeyRoundIcon } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import AppHeaderLogoutMenuItem from "./app-header-logout-menu-item";
+import { Input } from "@/components/ui/input";
 
 export default function AppHeader() {
   async function logoutAction(pathName: string) {
@@ -25,8 +26,10 @@ export default function AppHeader() {
   }
 
   return (
-    <nav className="flex items-center px-6 h-header bg-sidebar border-b border-sidebar">
+    <nav className="flex items-center gap-3 px-6 h-header bg-sidebar border-b border-sidebar">
       <SidebarTrigger />
+
+      <Input placeholder="Buscar" className="w-[300px] h-9" />
 
       <div className="ml-auto flex items-center">
         <DropdownMenu>

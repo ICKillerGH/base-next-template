@@ -1,7 +1,7 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AppSidebar from "./components/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "./app-sidebar";
 import { getCurrentSessionOrRedirect } from "@/lib/session";
-import AppHeader from "./components/app-header";
+import AppHeader from "./app-header";
 
 export default async function DashboardLayout({
   children,

@@ -1,4 +1,4 @@
-import Heading from "./components/heading";
+import Heading from "./heading";
 
 export default function Dashboard() {
   return (

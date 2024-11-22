@@ -1,11 +1,8 @@
-import { headers } from "next/headers";
+import { getCurrentSessionOrRedirectToPathname } from "@/lib/session";
 import Heading from "./heading";
-import { getCurrentSessionOrRedirect } from "@/lib/session";
 
 export default async function Dashboard() {
-  const headerList = await headers();
-
-  await getCurrentSessionOrRedirect(headerList.get("x-pathname"));
+  await getCurrentSessionOrRedirectToPathname();
 
   return (
     <div>

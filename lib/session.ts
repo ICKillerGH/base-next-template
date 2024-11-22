@@ -11,7 +11,7 @@ import {
   encodeHexLowerCase,
 } from "@oslojs/encoding";
 import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
@@ -127,7 +127,9 @@ export const getCurrentSession = cache(
   }
 );
 
-export async function getCurrentSessionOrRedirect(intended: string | null) {
+export async function getCurrentSessionOrRedirect(
+  intended: string | null = null
+) {
   const session = await getCurrentSession();
 
   const append =
@@ -138,6 +140,12 @@ export async function getCurrentSessionOrRedirect(intended: string | null) {
   }
 
   return session;
+}
+
+export async function getCurrentSessionOrRedirectToPathname() {
+  const headerList = await headers();
+
+  return await getCurrentSessionOrRedirect(headerList.get("x-pathname"));
 }
 
 export async function regenerateSession(userId: number) {

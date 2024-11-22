@@ -10,6 +10,7 @@ import {
 import { redirect } from "next/navigation";
 import { LoginSchema, loginSchema } from "./validation";
 import { revalidatePath } from "next/cache";
+import { check } from "@/lib/hashing";
 
 export type LoginActionState = { fields: Partial<LoginSchema> } & (
   | {
@@ -66,12 +67,15 @@ export const loginAction = async (
     };
   }
 
-  const passwordMatches = user.password === validatedFields.data.password;
+  const passwordMatches = await check(
+    validatedFields.data.password,
+    user.password
+  );
 
   if (!passwordMatches) {
     return {
       status: "validation-error",
-      errors: { email: ["Credenciales Invalidas 2"] },
+      errors: { email: ["Credenciales Invalidas"] },
       fields: validatedFields.data,
     };
   }

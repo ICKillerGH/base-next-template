@@ -65,8 +65,7 @@ export default function AppSidebar() {
                       asChild
                       isActive={item.uri === pathname}
                       className={[
-                        "h-10",
-                        "text-gray-400",
+                        "h-10 text-gray-500",
                         "data-[active=true]:bg-blue-100/40",
                         "data-[active=true]:font-medium",
                         "data-[active=true]:text-blue-600",

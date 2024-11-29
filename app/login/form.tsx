@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import FormGroup from "@/components/ui/form-group";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
+import InputGroup from "@/components/ui/input-group";
+import { MailIcon } from "lucide-react";
 
 export default function Form() {
   const searchParams = useSearchParams();
@@ -40,14 +42,18 @@ export default function Form() {
         <form action={formAction}>
           <FormGroup>
             <Label htmlFor="email">Correo electrónico</Label>
-            <Input
-              type="text"
-              id="email"
-              name="email"
-              placeholder="example@domain.com"
-              defaultValue={state.fields.email}
-              autoFocus
-            />
+            <InputGroup>
+              <MailIcon data-slot="icon" />
+              <Input
+                type="text"
+                id="email"
+                name="email"
+                placeholder="example@domain.com"
+                defaultValue={state.fields.email}
+                autoFocus
+              />
+              <MailIcon data-slot="icon" />
+            </InputGroup>
             {state.status === "validation-error" && state.errors.email?.[0] && (
               <span>{state.errors.email?.[0]}</span>
             )}
@@ -55,7 +61,7 @@ export default function Form() {
           <FormGroup>
             <Label htmlFor="password" className="flex justify-between">
               <span>Contraseña</span>
-              <a href="#" className="text-destructive" tabIndex={1}>
+              <a href="#" className="text-gray-400" tabIndex={1}>
                 Olvide mi contraseña
               </a>
             </Label>
